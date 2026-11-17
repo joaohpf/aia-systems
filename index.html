@@ -85,6 +85,7 @@ h1{margin-top:36px;font-size:clamp(40px,4.15vw,62px);font-weight:500;letter-spac
 /* ---------- projetos (fim do giro) ---------- */
 .proj-ui{position:absolute;inset:0;z-index:4;opacity:0;pointer-events:none}
 .proj-ui.on{pointer-events:auto}
+.proj-ui.on~.down{opacity:0;pointer-events:none}
 .pinfo{position:absolute;top:50%;transform:translateY(-50%);width:var(--pw,300px);transition:opacity .25s,transform .25s}
 .pinfo.left{left:56px}.pinfo.right{right:84px}
 .proj-ui.swap .pinfo{opacity:0;transform:translateY(calc(-50% + 8px))}
@@ -122,6 +123,16 @@ html.a11y-contrast .plist button{color:#fff}
 .lb.open{opacity:1;pointer-events:auto}
 .lb img{max-width:92vw;max-height:88vh;border-radius:16px;box-shadow:0 30px 80px #000;cursor:zoom-out;transform:scale(.88);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
 .lb.open img{transform:scale(1)}
+@media(max-width:750px),(max-width:1024px) and (orientation:portrait){
+  .pinfo{position:absolute;left:20px!important;right:20px!important;width:auto!important;max-width:none!important;transform:none;background:none!important;backdrop-filter:none!important;padding:0!important}
+  .pinfo.left{top:calc(var(--lapb,60vh) + 14px);bottom:auto}
+  .pinfo.right{top:auto;bottom:22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+  .pinfo.right .lbl{display:none}.pinfo.right .btns{margin-top:0}
+  .pinfo .meta{flex-wrap:wrap;gap:6px 12px;font-size:12px}
+  .pinfo h2{font-size:30px!important;margin-top:8px!important}
+  .pinfo p{display:-webkit-box!important;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;margin-top:8px}
+  .glass{width:46px;height:46px;margin:-23px 0 0 -23px;font-size:18px}.glass.zoom{width:40px;height:40px;margin:-20px 0 0 -20px}
+}
 @media(max-width:1100px){
   .pinfo{top:auto;bottom:22px;transform:none;width:auto;max-width:46vw;background:#000000d9;padding:14px 16px;border-radius:14px}
   .proj-ui.swap .pinfo{transform:translateY(8px)}
@@ -337,9 +348,10 @@ html.a11y-contrast .lb{background:#000}
   .nav a.link,.nav a.cta{font-size:13px}.nav a.cta{padding:7px 14px}
   .copy{left:24px;right:24px;top:120px}
   h1{font-size:min(38px,8.2vw);margin-top:22px}.lead{font-size:15px}.social{margin-top:24px}
-  .device{width:100%;height:48%;top:auto;bottom:0}
+  .device{width:100%;height:100%;top:0;bottom:auto}
   .down{left:24px}.hint{right:24px}
   .a11y-wrap{top:auto;bottom:90px}.a11y-panel{top:auto;bottom:0}
+  .a11y{padding:12px 10px}.a11y span{display:none}
   .tool .in{font-size:11px;padding:4px 10px 4px 4px}.tool .ic{width:28px;height:28px}.tool .ic svg{width:16px;height:16px}
 }
 </style>
@@ -447,7 +459,7 @@ html.a11y-contrast .lb{background:#000}
     <div>
       <div class="kicker">03 / CONTATO</div>
       <h2>Vamos tirar sua<span class="dim">ideia do papel?</span></h2>
-      <p class="lead2">Monte seu pedido ao lado e, ao enviar, veja ele sair impresso na hora. Se preferir, fale direto com a gente pelos canais abaixo.</p>
+      <p class="lead2">Monte seu pedido no terminal e, ao enviar, veja ele sair impresso na hora. Se preferir, fale direto com a gente pelos canais abaixo.</p>
       <div class="c-rows">
         <div class="c-row"><div class="grow"><small>E-MAIL</small><b id="cMail">aiasystems.support@gmail.com</b></div><button class="act" id="copyMail" type="button">Copiar</button></div>
         <a class="c-row" href="https://www.instagram.com/aia_systems" target="_blank" rel="noopener"><div class="grow"><small>INSTAGRAM</small><b>@aia_systems</b></div><span class="arr">↗</span></a>
@@ -486,7 +498,7 @@ html.a11y-contrast .lb{background:#000}
     </div>
     <div>
       <h4>Privacidade</h4>
-      <p class="t">O formulário deste site não guarda nenhum dado: ele apenas monta o seu pedido e abre o seu e-mail. Suas informações só chegam até nós quando você envia a mensagem.</p>
+      <p class="t">O site não guarda nenhum dado. As informações do terminal de pedidos são enviadas apenas para o nosso e-mail, e usadas só para responder ao seu pedido.</p>
       <p class="small">Termos de uso e política de privacidade · em preparação</p>
     </div>
     <div>
@@ -748,11 +760,21 @@ let xOff=0,camC=-1;const FIN={s:1,y:0};
 // c = posição horizontal do centro da cena (0.74 = coluna direita, 0.5 = centro da tela)
 function setCam(c){if(c===camC)return;camC=c;const w=wrap.clientWidth,h=wrap.clientHeight,FW=2*c*w;
   camera.aspect=FW/h;camera.setViewOffset(FW,h,0,0,w,h);camera.updateMatrixWorld(true);}
+// celular: notebook dimensionado para caber na largura, embaixo do texto (fase de abrir)
+const MOB={m:1,y0:0,y1:0};
+const baseCorners=[];for(let i=0;i<8;i++)baseCorners.push(new THREE.Vector3(i&1?W/2:-W/2,i&2?BT:0,i&4?D/2:-D/2));
+function allBox(){laptop.updateMatrixWorld(true);let t=1,b=0,l=1,r=0;const f=(o,c)=>{v3.copy(c);o.localToWorld(v3).project(camera);const y=(1-v3.y)/2,x=(v3.x+1)/2;t=Math.min(t,y);b=Math.max(b,y);l=Math.min(l,x);r=Math.max(r,x);};
+  corners.forEach(c=>f(lid,c));baseCorners.forEach(c=>f(pivot,c));return{t,b,l,r};}
+function poseA(P){hinge.rotation.x=P.lid;laptop.rotation.set(P.rx,P.ry,P.rz);laptop.position.set(0,0,0);}
+function calibMobile(){let m=1;for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s);const A=allBox();m=Math.min(m,.84/(A.r-A.l),.33/(A.b-A.t));}
+  MOB.m=m;const ys=[];for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s*m);const A=allBox();laptop.position.y=.1;const A1=allBox();const sl=(A1.b-A.b)/.1;ys.push(sl?(.95-A.b)/sl:0);}
+  MOB.y0=ys[0];MOB.y1=ys[1];}
 function resize(){document.documentElement.style.setProperty('--nav-h',navEl.offsetHeight+'px');const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);
   const wide=wideMQ.matches,colW=wide?w*.52:w;camera.fov=colW/h<1?42:30;camC=-1;setCam(.5);
   navLim=(navEl.getBoundingClientRect().bottom+16-wrap.getBoundingClientRect().top)/h;
   xOff=0;
-  tools.forEach(el=>{el.style.left=(wide?48+el.dataset.l*.52:+el.dataset.l)+'%';});
+  tools.forEach(el=>{if(el.dataset.t===undefined)el.dataset.t=parseFloat(el.style.top);el.style.left=(wide?48+el.dataset.l*.52:+el.dataset.l)+'%';el.style.top=(wide?+el.dataset.t:60+el.dataset.t*.36)+'%';});
+  if(!wide)calibMobile();
   // calibra a pose final: tampa grande (tamanho de destaque), logo abaixo da navbar
   hinge.rotation.x=S1.lid;laptop.rotation.set(FIN_RX,0,0);laptop.position.set(0,0,0);laptop.scale.setScalar(1);
   let B=lidBox();const top=navLim+.03,avail=.97-top;
@@ -763,8 +785,10 @@ function resize(){document.documentElement.style.setProperty('--nav-h',navEl.off
   const cy=(B.t+B.b)/2*h,lx=B.l*w,rx=B.r*w,gap=wide?62:34;
   // área clicável sobre a tela do notebook (amplia a imagem)
   Object.assign(scrHit.style,{left:lx+'px',top:(B.t*h)+'px',width:(rx-lx)+'px',height:((B.b-B.t)*h)+'px'});
-  prevBtn.style.left=(lx-gap)+'px';nextBtn.style.left=(rx+gap)+'px';prevBtn.style.top=nextBtn.style.top=cy+'px';
-  zoomBtn.style.left=(rx+gap)+'px';zoomBtn.style.top=(cy+72)+'px';
+  const cl=v=>Math.max(30,Math.min(w-30,v));
+  prevBtn.style.left=cl(lx-gap)+'px';nextBtn.style.left=cl(rx+gap)+'px';prevBtn.style.top=nextBtn.style.top=cy+'px';
+  if(wide){zoomBtn.style.left=(rx+gap)+'px';zoomBtn.style.top=(cy+72)+'px';}else{zoomBtn.style.left=(rx-30)+'px';zoomBtn.style.top=(B.t*h+30)+'px';}
+  {const A=allBox();ui.style.setProperty('--lapb',(A.b*h)+'px');}
   document.documentElement.style.setProperty('--pw',Math.max(200,Math.min(330,lx-gap-29-40-56))+'px');}
 addEventListener('resize',()=>{resize();invalidate();});resize();addEventListener('a11ychange',invalidate);
 
@@ -809,8 +833,9 @@ function frame(){
   const ry=lerp(lerp(S0.ry,S1.ry,t),Math.PI*2,tb);
   laptop.rotation.set(lerp(lerp(S0.rx,S1.rx,t),FIN_RX,tb),ry,lerp(S0.rz,S1.rz,t));
   setCam(wideMQ.matches?+lerp(.74,.5,tb).toFixed(4):.5);
-  laptop.position.set(lerp(lerp(S0.x,S1.x,t),0,tb),lerp(lerp(S0.y,S1.y,t),FIN.y,tb),0);
-  laptop.scale.setScalar(lerp(lerp(S0.s,S1.s,t),FIN.s,tb));
+  const mob=!wideMQ.matches;
+  laptop.position.set(mob?0:lerp(lerp(S0.x,S1.x,t),0,tb),lerp(mob?lerp(MOB.y0,MOB.y1,t):lerp(S0.y,S1.y,t),FIN.y,tb),0);
+  laptop.scale.setScalar(lerp(lerp(S0.s,S1.s,t)*(mob?MOB.m:1),FIN.s,tb));
   hinge.rotation.x=lerp(S0.lid,S1.lid,tl);
   // a tela só troca para os projetos quando o notebook passa de costas (ry ≥ 180°)
   setScreen(ry>=Math.PI);
