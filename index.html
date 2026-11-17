@@ -128,7 +128,7 @@ html.a11y-contrast .plist button{color:#fff}
 @media(max-width:750px),(max-width:1024px) and (orientation:portrait){
   .pinfo{position:absolute;left:20px!important;right:20px!important;width:auto!important;max-width:none!important;transform:none;background:none!important;backdrop-filter:none!important;padding:0!important}
   .pinfo.left{top:calc(var(--lapb,60vh) + 14px);bottom:auto}
-  .pinfo.right{top:auto;bottom:84px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+  .pinfo.right{top:var(--rtop,auto);bottom:auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
   .pinfo.right .lbl{display:none}.pinfo.right .btns{margin-top:0}
   .pinfo .meta{flex-wrap:wrap;gap:6px 12px;font-size:12px}
   .pinfo h2{font-size:30px!important;margin-top:8px!important}
@@ -785,7 +785,7 @@ function resize(){document.documentElement.style.setProperty('--nav-h',navEl.off
   // calibra a pose final: tampa grande (tamanho de destaque), logo abaixo da navbar
   hinge.rotation.x=S1.lid;laptop.rotation.set(FIN_RX,0,0);laptop.position.set(0,0,0);laptop.scale.setScalar(1);
   let B=lidBox();const top=navLim+.03,avail=.97-top;
-  const k=Math.min(avail*.74/(B.b-B.t),(wide?.36:.86)/(B.r-B.l));laptop.scale.setScalar(k);B=lidBox();
+  const k=Math.min(avail*(wide?.74:.32)/(B.b-B.t),(wide?.36:.8)/(B.r-B.l));laptop.scale.setScalar(k);B=lidBox();
   laptop.position.y=.1;const B1=lidBox();const slope=(B1.t-B.t)/.1;FIN.s=k;FIN.y=slope?(top-B.t)/slope:0;
   laptop.position.y=FIN.y;B=lidBox();
   // setas por fora do notebook, lupa abaixo da seta direita
@@ -803,15 +803,17 @@ addEventListener('resize',()=>{resize();invalidate();});resize();addEventListene
 const $=id=>document.getElementById(id);
 const pList=$('pList');pList.innerHTML=PROJ.map((p,k)=>`<li><button type="button" data-k="${k}"><span>${String(k+1).padStart(2,'0')}</span>${p.title}<i></i></button></li>`).join('');
 pList.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const n=PROJ.length,cur=((car.idx%n)+n)%n,d=+b.dataset.k-cur;if(d)go(d);});
+function placeRight(){if(wideMQ.matches)return;const L=document.querySelector('.pinfo.left');ui.style.setProperty('--rtop',(L.offsetTop+L.offsetHeight+14)+'px');}
+addEventListener('resize',()=>requestAnimationFrame(placeRight));
 function fillInfo(){const n=PROJ.length,i=((car.idx%n)+n)%n,p=PROJ[i];pList.querySelectorAll('button').forEach((b,k)=>b.setAttribute('aria-current',k===i));
   $('pNum').textContent=String(i+1).padStart(2,'0')+' / '+String(n).padStart(2,'0');$('pStatus').textContent=p.status;$('pTitle').textContent=p.title;$('pDesc').textContent=p.desc;
   $('pTags').innerHTML=p.tags.map(t=>'<span>#'+t+'</span>').join('');
   const l1=$('pL1'),l2=$('pL2');
   if(p.l1){l1.style.display='';l1.href=p.l1[1];l1.textContent=p.l1[0]+' ↗';}else{l1.style.display='';l1.href=p.l2[1];l1.textContent='Ver repositório ↗';}
   if(p.l1){l2.style.display='';l2.href=p.l2[1];l2.querySelector('span').textContent=p.l2[0];}else l2.style.display='none';}
-fillInfo();
+fillInfo();placeRight();
 let swapT;
-function go(d){car.idx+=d;invalidate();ui.classList.add('swap');clearTimeout(swapT);swapT=setTimeout(()=>{fillInfo();ui.classList.remove('swap');},220);}
+function go(d){car.idx+=d;invalidate();ui.classList.add('swap');clearTimeout(swapT);swapT=setTimeout(()=>{fillInfo();placeRight();ui.classList.remove('swap');},220);}
 prevBtn.addEventListener('click',()=>go(-1));nextBtn.addEventListener('click',()=>go(1));
 // lupa: amplia a tela atual; clicar na imagem fecha
 const lb=$('lb'),lbImg=$('lbImg');
