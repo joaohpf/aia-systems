@@ -348,7 +348,7 @@ html.a11y-contrast .lb{background:#000}
 @media(max-width:1024px) and (orientation:portrait),(max-width:750px){
   .nav{padding:16px 20px}.nav .menu{gap:16px}.nav .wm{display:none}
   .nav a.link,.nav a.cta{font-size:13px}.nav a.cta{padding:7px 14px}
-  .hero-scroll{height:400vh} /* celular: menos rolagem = animação mais rápida */
+  .hero-scroll{height:270vh} /* celular: menos rolagem = animação mais rápida */
   .copy{left:24px;right:24px;top:calc(var(--nav-h,76px) + 18px)}
   h1{font-size:min(38px,8.2vw);margin-top:22px}.lead{font-size:15px}.social{margin-top:24px}
   .device{width:100%;height:100%;top:0;bottom:auto}
@@ -840,7 +840,7 @@ function frame(){
   const moving=Math.abs(tg-cur)>1e-4||Math.abs(car.idx-car.pos)>1e-3;
   if(!moving&&!needs)return; // parado: não renderiza nada
   needs=false;
-  cur+=(tg-cur)*(wideMQ.matches?0.05:0.09);if(Math.abs(tg-cur)<=1e-4)cur=tg;
+  cur+=(tg-cur)*(wideMQ.matches?0.05:0.12);if(Math.abs(tg-cur)<=1e-4)cur=tg;
   car.pos+=(car.idx-car.pos)*.12;if(Math.abs(car.idx-car.pos)<=1e-3)car.pos=car.idx;
   // fase A: notebook abre | fase B: gira 360°, cresce e vai ao centro | depois fica parado para navegar
   const pa=clamp01(cur/.32), pb=clamp01((cur-.36)/.5);
