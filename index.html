@@ -771,7 +771,9 @@ function calibMobile(){let m=1;for(const P of[S0,S1]){poseA(P);laptop.scale.setS
   MOB.y0=ys[0];MOB.y1=ys[1];}
 function resize(){document.documentElement.style.setProperty('--nav-h',navEl.offsetHeight+'px');const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);
   const wide=wideMQ.matches,colW=wide?w*.52:w;camera.fov=colW/h<1?42:30;camC=-1;setCam(.5);
-  navLim=(navEl.getBoundingClientRect().bottom+16-wrap.getBoundingClientRect().top)/h;
+  // limite da navbar medido pela altura dela (não pela posição na tela): assim o cálculo não quebra quando a
+  // janela muda de tamanho com o usuário fora do topo (ex.: barra do navegador do celular aparecendo/sumindo)
+  navLim=(navEl.offsetHeight+16)/h;
   xOff=0;
   tools.forEach(el=>{if(el.dataset.t===undefined)el.dataset.t=parseFloat(el.style.top);el.style.left=(wide?48+el.dataset.l*.52:+el.dataset.l)+'%';el.style.top=(wide?+el.dataset.t:60+el.dataset.t*.36)+'%';});
   if(!wide)calibMobile();
