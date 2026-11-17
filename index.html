@@ -128,7 +128,7 @@ html.a11y-contrast .plist button{color:#fff}
 @media(max-width:750px),(max-width:1024px) and (orientation:portrait){
   .pinfo{position:absolute;left:20px!important;right:20px!important;width:auto!important;max-width:none!important;transform:none;background:none!important;backdrop-filter:none!important;padding:0!important}
   .pinfo.left{top:calc(var(--lapb,60vh) + 14px);bottom:auto}
-  .pinfo.right{top:auto;bottom:22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+  .pinfo.right{top:auto;bottom:84px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
   .pinfo.right .lbl{display:none}.pinfo.right .btns{margin-top:0}
   .pinfo .meta{flex-wrap:wrap;gap:6px 12px;font-size:12px}
   .pinfo h2{font-size:30px!important;margin-top:8px!important}
@@ -348,13 +348,13 @@ html.a11y-contrast .lb{background:#000}
 @media(max-width:1024px) and (orientation:portrait),(max-width:750px){
   .nav{padding:16px 20px}.nav .menu{gap:16px}.nav .wm{display:none}
   .nav a.link,.nav a.cta{font-size:13px}.nav a.cta{padding:7px 14px}
-  .copy{left:24px;right:24px;top:120px}
+  .copy{left:24px;right:24px;top:calc(var(--nav-h,76px) + 18px)}
   h1{font-size:min(38px,8.2vw);margin-top:22px}.lead{font-size:15px}.social{margin-top:24px}
   .device{width:100%;height:100%;top:0;bottom:auto}
-  .down{left:24px}.hint{right:24px}
+  .down{left:24px;bottom:84px}.hint{right:auto;left:66px;bottom:94px}
   .a11y-wrap{top:auto;bottom:90px}.a11y-panel{top:auto;bottom:0}
   .a11y{padding:12px 10px}.a11y span{display:none}
-  .tool .in{font-size:11px;padding:3px 9px 3px 3px;gap:7px;border-radius:11px}.tool .ic{width:24px;height:24px;border-radius:7px}.tool .ic svg{width:14px;height:14px}
+  .tool .in{font-size:10px;padding:3px 8px 3px 3px;gap:5px;border-radius:10px}.tool .ic{width:24px;height:24px;border-radius:7px}.tool .ic svg{width:14px;height:14px}
 }
 </style>
 </head>
@@ -768,8 +768,8 @@ const baseCorners=[];for(let i=0;i<8;i++)baseCorners.push(new THREE.Vector3(i&1?
 function allBox(){laptop.updateMatrixWorld(true);let t=1,b=0,l=1,r=0;const f=(o,c)=>{v3.copy(c);o.localToWorld(v3).project(camera);const y=(1-v3.y)/2,x=(v3.x+1)/2;t=Math.min(t,y);b=Math.max(b,y);l=Math.min(l,x);r=Math.max(r,x);};
   corners.forEach(c=>f(lid,c));baseCorners.forEach(c=>f(pivot,c));return{t,b,l,r};}
 function poseA(P){hinge.rotation.x=P.lid;laptop.rotation.set(P.rx,P.ry,P.rz);laptop.position.set(0,0,0);}
-function calibMobile(){let m=1;for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s);const A=allBox();m=Math.min(m,.84/(A.r-A.l),.31/(A.b-A.t));}
-  MOB.m=m;const ys=[];for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s*m);const A=allBox();laptop.position.y=.1;const A1=allBox();const sl=(A1.b-A.b)/.1;ys.push(sl?(.95-A.b)/sl:0);}
+function calibMobile(){let m=1;for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s);const A=allBox();m=Math.min(m,.8/(A.r-A.l),.27/(A.b-A.t));}
+  MOB.m=m;const ys=[];for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s*m);const A=allBox();laptop.position.y=.1;const A1=allBox();const sl=(A1.b-A.b)/.1;ys.push(sl?(.84-A.b)/sl:0);}
   MOB.y0=ys[0];MOB.y1=ys[1];}
 function resize(){document.documentElement.style.setProperty('--nav-h',navEl.offsetHeight+'px');const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);
   const wide=wideMQ.matches,colW=wide?w*.52:w;camera.fov=colW/h<1?42:30;camC=-1;setCam(.5);
@@ -778,7 +778,7 @@ function resize(){document.documentElement.style.setProperty('--nav-h',navEl.off
   navLim=(navEl.offsetHeight+16)/h;
   xOff=0;
   // celular: cards em 3 linhas no espaço acima do notebook (sem ficar em cima dele)
-  const MPOS=[[18,51.5],[50,51.5],[82,51.5],[18,56.5],[50,56.5],[82,56.5],[34,61.5],[66,61.5]];
+  const MPOS=[[13,47.5],[38,47.5],[63,47.5],[87,47.5],[13,52],[38,52],[63,52],[87,52]];
   tools.forEach((el,i)=>{if(el.dataset.t===undefined)el.dataset.t=parseFloat(el.style.top);const mp=MPOS[i%MPOS.length];
     el.style.left=(wide?48+el.dataset.l*.52:mp[0])+'%';el.style.top=(wide?+el.dataset.t:mp[1])+'%';});
   if(!wide)calibMobile();
