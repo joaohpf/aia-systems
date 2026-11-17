@@ -354,7 +354,7 @@ html.a11y-contrast .lb{background:#000}
   .down{left:24px}.hint{right:24px}
   .a11y-wrap{top:auto;bottom:90px}.a11y-panel{top:auto;bottom:0}
   .a11y{padding:12px 10px}.a11y span{display:none}
-  .tool .in{font-size:11px;padding:4px 10px 4px 4px}.tool .ic{width:28px;height:28px}.tool .ic svg{width:16px;height:16px}
+  .tool .in{font-size:11px;padding:3px 9px 3px 3px;gap:7px;border-radius:11px}.tool .ic{width:24px;height:24px;border-radius:7px}.tool .ic svg{width:14px;height:14px}
 }
 </style>
 </head>
@@ -768,7 +768,7 @@ const baseCorners=[];for(let i=0;i<8;i++)baseCorners.push(new THREE.Vector3(i&1?
 function allBox(){laptop.updateMatrixWorld(true);let t=1,b=0,l=1,r=0;const f=(o,c)=>{v3.copy(c);o.localToWorld(v3).project(camera);const y=(1-v3.y)/2,x=(v3.x+1)/2;t=Math.min(t,y);b=Math.max(b,y);l=Math.min(l,x);r=Math.max(r,x);};
   corners.forEach(c=>f(lid,c));baseCorners.forEach(c=>f(pivot,c));return{t,b,l,r};}
 function poseA(P){hinge.rotation.x=P.lid;laptop.rotation.set(P.rx,P.ry,P.rz);laptop.position.set(0,0,0);}
-function calibMobile(){let m=1;for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s);const A=allBox();m=Math.min(m,.84/(A.r-A.l),.33/(A.b-A.t));}
+function calibMobile(){let m=1;for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s);const A=allBox();m=Math.min(m,.84/(A.r-A.l),.31/(A.b-A.t));}
   MOB.m=m;const ys=[];for(const P of[S0,S1]){poseA(P);laptop.scale.setScalar(P.s*m);const A=allBox();laptop.position.y=.1;const A1=allBox();const sl=(A1.b-A.b)/.1;ys.push(sl?(.95-A.b)/sl:0);}
   MOB.y0=ys[0];MOB.y1=ys[1];}
 function resize(){document.documentElement.style.setProperty('--nav-h',navEl.offsetHeight+'px');const w=wrap.clientWidth,h=wrap.clientHeight;renderer.setSize(w,h,false);
@@ -777,7 +777,10 @@ function resize(){document.documentElement.style.setProperty('--nav-h',navEl.off
   // janela muda de tamanho com o usuário fora do topo (ex.: barra do navegador do celular aparecendo/sumindo)
   navLim=(navEl.offsetHeight+16)/h;
   xOff=0;
-  tools.forEach(el=>{if(el.dataset.t===undefined)el.dataset.t=parseFloat(el.style.top);el.style.left=(wide?48+el.dataset.l*.52:+el.dataset.l)+'%';el.style.top=(wide?+el.dataset.t:60+el.dataset.t*.36)+'%';});
+  // celular: cards em 3 linhas no espaço acima do notebook (sem ficar em cima dele)
+  const MPOS=[[18,51.5],[50,51.5],[82,51.5],[18,56.5],[50,56.5],[82,56.5],[34,61.5],[66,61.5]];
+  tools.forEach((el,i)=>{if(el.dataset.t===undefined)el.dataset.t=parseFloat(el.style.top);const mp=MPOS[i%MPOS.length];
+    el.style.left=(wide?48+el.dataset.l*.52:mp[0])+'%';el.style.top=(wide?+el.dataset.t:mp[1])+'%';});
   if(!wide)calibMobile();
   // calibra a pose final: tampa grande (tamanho de destaque), logo abaixo da navbar
   hinge.rotation.x=S1.lid;laptop.rotation.set(FIN_RX,0,0);laptop.position.set(0,0,0);laptop.scale.setScalar(1);
