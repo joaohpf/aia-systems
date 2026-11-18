@@ -38,7 +38,7 @@ a{color:inherit;text-decoration:none}
 .a11y svg{width:18px;height:18px}
 
 /* ---------- HERO (scroll scene) ---------- */
-.hero-scroll{position:relative;height:700vh}
+.hero-scroll{position:relative;height:520vh}
 .stage{position:sticky;top:0;height:100vh;overflow:hidden;
   background-image:linear-gradient(var(--grid-line) 1px,transparent 1px),linear-gradient(90deg,var(--grid-line) 1px,transparent 1px);
   background-size:var(--grid-size) var(--grid-size);background-position:-1px 0}
@@ -840,7 +840,7 @@ function frame(){
   const moving=Math.abs(tg-cur)>1e-4||Math.abs(car.idx-car.pos)>1e-3;
   if(!moving&&!needs)return; // parado: não renderiza nada
   needs=false;
-  cur+=(tg-cur)*(wideMQ.matches?0.05:0.1);if(Math.abs(tg-cur)<=1e-4)cur=tg;
+  cur+=(tg-cur)*(wideMQ.matches?0.07:0.1);if(Math.abs(tg-cur)<=1e-4)cur=tg;
   car.pos+=(car.idx-car.pos)*.12;if(Math.abs(car.idx-car.pos)<=1e-3)car.pos=car.idx;
   // fase A: notebook abre | fase B: gira 360°, cresce e vai ao centro | depois fica parado para navegar
   const pa=clamp01(cur/.32), pb=clamp01((cur-.36)/.5);
