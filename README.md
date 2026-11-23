@@ -1,6 +1,3 @@
-**Author:** 
-João Henrique Porfirio Firmiano ([@joaohpf](https://github.com/joaohpf))
-
 # AIA Systems — Website
 
 Institutional website for **AIA Systems**: websites, automations and integrations for businesses.
